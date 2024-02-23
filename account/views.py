@@ -18,7 +18,9 @@ from rest_framework.permissions import IsAuthenticated
 
 # To generate token manually
 def get_tokens_for_user(user):
-    refresh = RefreshToken.for_user(user)
+    refresh = RefreshToken.for_user(
+        user,
+    )
 
     return {
         "refresh": str(refresh),
@@ -33,6 +35,7 @@ class UserRegistrationView(APIView):
         serializer = UserRegistrationSerializer(data=request.data)
         if serializer.is_valid(raise_exception=False):
             user = serializer.save()
+
             token = get_tokens_for_user(user)
             return Response(
                 {"token": token, "msg": "Registration Successful."},
@@ -50,6 +53,7 @@ class UserLoginView(APIView):
         password = serializer.data.get("password")
         user = authenticate(email=email, password=password)
         if user:
+            print(f"user:{type(user)}")
             token = get_tokens_for_user(user)
             return Response(
                 {"token": token, "msg": "Login Successful."},
